@@ -1,121 +1,115 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ellenszenvek</title>
-    <style>
-	.race-selector {
-    position: relative;
-    margin: 20px 0;
-}
-
-
-.race-selector {
-    position: relative;
-    width: 280px; 
-    margin: 20px 0;
-    background: rgba(0, 0, 0, 0.8);
-    border: 1px solid #3a1a1a;
-}
-
-.race-option {
-    padding: 12px 15px;
-    margin: 3px;
-    background: #1a0a0a;
-    border: 1px solid #3a1a1a;
-    color: #d4af37;
-    font-family: 'Palatino Linotype', 'Book Antiqua', serif;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.race-image {
-    display: none;
-    position: absolute;
-    left: 290px; 
-    top: 0;
-    width: 220px;
-    height: 220px;
-    border: 3px solid #3a1a1a;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
-    filter: sepia(0.4) contrast(1.1);
-}
-
-.race-option:hover {
-    background: #2c0f0f;
-    border-color: #c0a020;
-    transform: translateX(5px);
-}
-
-.race-option:hover + .race-image {
-    display: block;
-    animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.race-option:hover + .race-image {
-    display: block;
-}
-
-        body {
-            margin: 0;
-            padding: 20px;
-            min-height: 100vh;
-            background: linear-gradient(0deg, #310707 0%, #000000 74%);
-            color: #fff;
-            position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
-            border: 4px double #0b0404;
-            pointer-events: none;
-        }
-
-        .container {
-            display: flex;
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .game-content {
-            width: 70%;
-        }
-
-        .notes {
-            width: 30%;
-            padding-left: 20px;
-        }
-
-        textarea {
-            width: 100%;
-            height: 300px;
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid #3a1a1a;
-            color: #d4af37;
-            padding: 10px;
-        }
-
-        .class-info {
-            color: #8a8a8a;
-            font-style: italic;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ellenszenvek MP TESZT</title>
+  <style>
+    .race-selector {
+      position: relative;
+      width: 280px; 
+      margin: 20px 0;
+      background: rgba(0, 0, 0, 0.8);
+      border: 1px solid #3a1a1a;
+    }
+    .race-option {
+      padding: 12px 15px;
+      margin: 3px;
+      background: #1a0a0a;
+      border: 1px solid #3a1a1a;
+      color: #d4af37;
+      font-family: 'Palatino Linotype', 'Book Antiqua', serif;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .race-image {
+      display: none;
+      position: absolute;
+      left: 290px; 
+      top: 0;
+      width: 220px;
+      height: 220px;
+      border: 3px solid #3a1a1a;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
+      filter: sepia(0.4) contrast(1.1);
+    }
+    .race-option:hover {
+      background: #2c0f0f;
+      border-color: #c0a020;
+      transform: translateX(5px);
+    }
+    .race-option:hover + .race-image {
+      display: block;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .race-option:hover + .race-image {
+      display: block;
+    }
+    body {
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      background: linear-gradient(0deg, #310707 0%, #000000 74%);
+      color: #fff;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      border: 4px double #0b0404;
+      pointer-events: none;
+    }
+    .container {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .game-content {
+      width: 70%;
+    }
+    .notes {
+      width: 30%;
+      padding-left: 20px;
+    }
+    textarea {
+      width: 100%;
+      height: 300px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid #3a1a1a;
+      color: #d4af37;
+      padding: 10px;
+    }
+    .class-info {
+      color: #8a8a8a;
+      font-style: italic;
+    }
+    #roomSection {
+      margin-bottom: 20px;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid #3a1a1a;
+    }
+  </style>
 </head>
 <body>
+<body>
     <h1>Ellenszenvek Beta 1.0</h1>
+  <div id="roomSection">
+    <button onclick="createRoom()">Szoba létrehozása</button>
+    <button onclick="joinRoom()">Csatlakozás szobához</button>
+    <p id="roomStatus">Nem csatlakoztál még szobához.</p>
+    <div id="roomPlayers"></div>
+  </div>
     <div class="container">
         <div class="game-content">
             <h2>Karakter Létrehozás</h2>
@@ -520,6 +514,256 @@
             }
             updateClassInfo();
         };
+	    
     </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+    import { 
+      getDatabase, 
+      ref, 
+      set, 
+      get, 
+      push, 
+      update, 
+      onValue,
+      onDisconnect 
+    } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_Vn4HOXupmxNlW6vDNMDEgH9vlWCj88g",
+      authDomain: "eszgame-server.firebaseapp.com",
+      projectId: "eszgame-server",
+      storageBucket: "eszgame-server.firebasestorage.app",
+      messagingSenderId: "319541407839",
+      appId: "1:319541407839:web:84b08fe2b4ae2852b0abea",
+      measurementId: "G-307PWJ62Q0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    let roomId = null;
+    let playerId = null;
+    let playerRef = null;
+
+    // Globális függvények elérhetővé tétele
+    window.firebaseTools = {
+      createRoom: async () => {
+        try {
+          roomId = 'room_' + Math.random().toString(36).substr(2, 9);
+          const roomRef = ref(database, `rooms/${roomId}`);
+          await set(roomRef, {
+            createdAt: Date.now(),
+            players: {},
+            lastActivity: Date.now()
+          });
+          onDisconnect(roomRef).remove();
+          document.getElementById("roomStatus").textContent = `Szoba létrehozva: ${roomId}`;
+          this.listenToRoom();
+          this.startCleanupInterval();
+        } catch (error) {
+          alert("Hiba: " + error.message);
+        }
+      },
+
+      joinRoom: async () => {
+        const inputRoom = prompt("Add meg a szoba kódját:");
+        if (!inputRoom) return;
+        try {
+          const roomRef = ref(database, `rooms/${inputRoom}`);
+          const snapshot = await get(roomRef);
+          if (snapshot.exists()) {
+            roomId = inputRoom;
+            await update(roomRef, { lastActivity: Date.now() });
+            document.getElementById("roomStatus").textContent = `Csatlakozva: ${roomId}`;
+            this.listenToRoom();
+          } else {
+            alert("A szoba nem létezik!");
+          }
+        } catch (error) {
+          alert("Hiba: " + error.message);
+        }
+      },
+
+      listenToRoom: () => {
+        if (!roomId) return;
+        const playersRef = ref(database, `rooms/${roomId}/players`);
+        onValue(playersRef, (snapshot) => {
+          const players = snapshot.val() || {};
+          const roomPlayersDiv = document.getElementById("roomPlayers");
+          roomPlayersDiv.innerHTML = Object.entries(players)
+            .map(([id, player]) => `
+              <div class="player-info">
+                <strong>${player.name}</strong> (${player.class})
+                <div>HP: ${player.currentHP}/${player.maxHP}</div>
+                <div>ATK: ${player.atk} DEF: ${player.def} ESC: ${player.esc}</div>
+              </div>
+            `).join('');
+        });
+      },
+
+      updatePlayerState: async (character) => {
+        if (playerRef) {
+          try {
+            await update(playerRef, character);
+            await update(ref(database, `rooms/${roomId}`), { lastActivity: Date.now() });
+          } catch (error) {
+            console.error("Szinkronizációs hiba:", error);
+          }
+        }
+      },
+
+      startCleanupInterval: () => {
+        setInterval(async () => {
+          const roomsSnapshot = await get(ref(database, 'rooms'));
+          const rooms = roomsSnapshot.val() || {};
+          const now = Date.now();
+          Object.entries(rooms).forEach(async ([roomId, roomData]) => {
+            if (now - roomData.lastActivity > 3600000) {
+              await set(ref(database, `rooms/${roomId}`), null);
+            }
+          });
+        }, 600000);
+      }
+    };
+  </script>
+
+  <script>
+    // Játéklogika
+    let character = {};
+    let turns = 0;
+    let shapeshiftActive = false;
+
+    const classHP = {
+      Harcos: 600, Mágus: 500, Tolvaj: 400, Druida: 450,
+      Pigmen: 525, Tünde: 425, Pap: 375, SötétElf: 450,
+      Koldus: 350, Tank: 900, Alakváltó: 400
+    };
+
+    const classTypes = {
+      Fizikai: ["Harcos", "Tolvaj", "Koldus"],
+      Spirit: ["Druida", "Mágus", "SötétElf"],
+      Support: ["Tünde", "Tank", "Pigmen", "Pap"],
+      Speciális: ["Alakváltó"]
+    };
+
+    // Globális függvények
+    window.updateClassInfo = function() {
+      const selectedClass = document.getElementById("class").value;
+      let infoText = "";
+      if (classTypes.Fizikai.includes(selectedClass)) {
+        infoText = "Rezisztencia: Fizikai sebzés -20% | Érzékenység: Spirit sebzés +25%";
+      } else if (classTypes.Spirit.includes(selectedClass)) {
+        infoText = "Rezisztencia: Spirit sebzés -20% | Érzékenység: Fizikai sebzés +25%";
+      } else if (classTypes.Support.includes(selectedClass)) {
+        infoText = "Nincs rezisztencia vagy érzékenység";
+      } else if (selectedClass === "Alakváltó") {
+        infoText = "Alakváltó: 5 körönként választhat más kasztot 1 körre";
+        document.getElementById("shapeshiftSection").style.display = "block";
+      } else {
+        document.getElementById("shapeshiftSection").style.display = "none";
+      }
+      document.getElementById("classInfo").textContent = infoText;
+    };
+
+    window.modifyStat = function(stat, change) {
+      const input = document.getElementById(stat);
+      const remainingElement = document.getElementById('remainingPoints');
+      let currentValue = parseInt(input.value);
+      let remaining = parseInt(remainingElement.textContent.split(': ')[1]);
+
+      if(change === 1) {
+        if(remaining > 0 && currentValue < 20) {
+          input.value = currentValue + 1;
+          remainingElement.textContent = `Maradék pontok: ${remaining - 1}`;
+        }
+      } else {
+        if(currentValue > 1) {
+          input.value = currentValue - 1;
+          remainingElement.textContent = `Maradék pontok: ${remaining + 1}`;
+        }
+      }
+    };
+
+    window.createCharacter = function() {
+      const totalPoints = 20 - parseInt(document.getElementById('remainingPoints').textContent.split(': ')[1]);
+      if(totalPoints !== 20) {
+        alert("Pontosan 20 pontot kell szétosztani!");
+        return;
+      }
+
+      const className = document.getElementById("class").value;
+      character = {
+        name: document.getElementById("name").value,
+        class: className,
+        originalClass: className,
+        currentForm: null,
+        maxHP: classHP[className],
+        currentHP: classHP[className],
+        atk: parseInt(document.getElementById("atk").value),
+        esc: parseInt(document.getElementById("esc").value),
+        def: parseInt(document.getElementById("def").value),
+        turnsSinceShapeshift: 0
+      };
+
+      // Firebase-be mentés
+      if(roomId) {
+        const playersRef = ref(database, `rooms/${roomId}/players`);
+        const newPlayerRef = push(playersRef);
+        playerId = newPlayerRef.key;
+        playerRef = newPlayerRef;
+        set(newPlayerRef, character);
+        onDisconnect(newPlayerRef).remove();
+      }
+
+      updateCharacterDisplay();
+      updateClassInfo();
+    };
+
+    function updateCharacterDisplay() {
+      const displayedClass = character.currentForm 
+        ? `${character.class} (${character.currentForm})`
+        : character.class;
+
+      document.getElementById("characterInfo").innerHTML = `
+        Név: ${character.name}<br>
+        Kaszt: ${displayedClass}<br>
+        HP: ${character.currentHP}/${character.maxHP}<br>
+        ATK: ${character.atk}<br>
+        ESC: ${character.esc}<br>
+        DEF: ${character.def}<br>
+      `;
+
+      if(playerRef) {
+        update(playerRef, character);
+      }
+    }
+
+    // További függvények...
+    window.takeDamage = function() {
+      if(!character.name) return;
+      const dmg = parseInt(document.getElementById("dmgInput").value) || 0;
+      character.currentHP = Math.max(character.currentHP - dmg, 0);
+      document.getElementById("hpStatus").innerHTML = `Sebzés: ${dmg} | Maradék HP: ${character.currentHP}`;
+      updateCharacterDisplay();
+      window.firebaseTools.updatePlayerState(character);
+    };
+
+    window.healCharacter = function() {
+      if(!character.name) return;
+      const heal = parseInt(document.getElementById("healInput").value) || 0;
+      character.currentHP = Math.min(character.currentHP + heal, character.maxHP);
+      document.getElementById("healStatus").innerHTML = `Gyógyítás: ${heal} | Jelenlegi HP: ${character.currentHP}`;
+      updateCharacterDisplay();
+      window.firebaseTools.updatePlayerState(character);
+    };
+
+    // További eseménykezelők...
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('shapeshiftSection').style.display = 'none';
+      window.updateClassInfo();
+    });
+  </script>
 </body>
 </html>
