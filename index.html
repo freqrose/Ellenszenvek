@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
-  <meta charset="UTF-8">
+ <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ellenszenvek MP TESZT</title>
   <style>
@@ -517,253 +517,102 @@
 	    
     </script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-    import { 
-      getDatabase, 
-      ref, 
-      set, 
-      get, 
-      push, 
-      update, 
-      onValue,
-      onDisconnect 
-    } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyD_Vn4HOXupmxNlW6vDNMDEgH9vlWCj88g",
-      authDomain: "eszgame-server.firebaseapp.com",
-      projectId: "eszgame-server",
-      storageBucket: "eszgame-server.firebasestorage.app",
-      messagingSenderId: "319541407839",
-      appId: "1:319541407839:web:84b08fe2b4ae2852b0abea",
-      measurementId: "G-307PWJ62Q0"
-    };
+<script type="module">
+  // Firebase inicializáció
+  import { 
+    initializeApp 
+  } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+  import { 
+    getDatabase, 
+    ref, 
+    set, 
+    onDisconnect,
+    update,
+    get,
+    onValue,
+    push
+  } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
 
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
+  const firebaseConfig = {
+    apiKey: "AIzaSyD_Vn4HOXupmxNlW6vDNMDEgH9vlWCj88g",
+    authDomain: "eszgame-server.firebaseapp.com",
+    projectId: "eszgame-server",
+    storageBucket: "eszgame-server.appspot.com",
+    messagingSenderId: "319541407839",
+    appId: "1:319541407839:web:84b08fe2b4ae2852b0abea",
+    measurementId: "G-307PWJ62Q0"
+  };
 
-    let roomId = null;
-    let playerId = null;
-    let playerRef = null;
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+  let roomId = null;
+  let playerId = null;
+  let playerRef = null;
 
-    // Globális függvények elérhetővé tétele
-    window.firebaseTools = {
-      createRoom: async () => {
-        try {
-          roomId = 'room_' + Math.random().toString(36).substr(2, 9);
-          const roomRef = ref(database, `rooms/${roomId}`);
-          await set(roomRef, {
-            createdAt: Date.now(),
-            players: {},
-            lastActivity: Date.now()
-          });
-          onDisconnect(roomRef).remove();
-          document.getElementById("roomStatus").textContent = `Szoba létrehozva: ${roomId}`;
-          this.listenToRoom();
-          this.startCleanupInterval();
-        } catch (error) {
-          alert("Hiba: " + error.message);
-        }
-      },
-
-      joinRoom: async () => {
-        const inputRoom = prompt("Add meg a szoba kódját:");
-        if (!inputRoom) return;
-        try {
-          const roomRef = ref(database, `rooms/${inputRoom}`);
-          const snapshot = await get(roomRef);
-          if (snapshot.exists()) {
-            roomId = inputRoom;
-            await update(roomRef, { lastActivity: Date.now() });
-            document.getElementById("roomStatus").textContent = `Csatlakozva: ${roomId}`;
-            this.listenToRoom();
-          } else {
-            alert("A szoba nem létezik!");
-          }
-        } catch (error) {
-          alert("Hiba: " + error.message);
-        }
-      },
-
-      listenToRoom: () => {
-        if (!roomId) return;
-        const playersRef = ref(database, `rooms/${roomId}/players`);
-        onValue(playersRef, (snapshot) => {
-          const players = snapshot.val() || {};
-          const roomPlayersDiv = document.getElementById("roomPlayers");
-          roomPlayersDiv.innerHTML = Object.entries(players)
-            .map(([id, player]) => `
-              <div class="player-info">
-                <strong>${player.name}</strong> (${player.class})
-                <div>HP: ${player.currentHP}/${player.maxHP}</div>
-                <div>ATK: ${player.atk} DEF: ${player.def} ESC: ${player.esc}</div>
-              </div>
-            `).join('');
-        });
-      },
-
-      updatePlayerState: async (character) => {
-        if (playerRef) {
-          try {
-            await update(playerRef, character);
-            await update(ref(database, `rooms/${roomId}`), { lastActivity: Date.now() });
-          } catch (error) {
-            console.error("Szinkronizációs hiba:", error);
-          }
-        }
-      },
-
-      startCleanupInterval: () => {
-        setInterval(async () => {
-          const roomsSnapshot = await get(ref(database, 'rooms'));
-          const rooms = roomsSnapshot.val() || {};
-          const now = Date.now();
-          Object.entries(rooms).forEach(async ([roomId, roomData]) => {
-            if (now - roomData.lastActivity > 3600000) {
-              await set(ref(database, `rooms/${roomId}`), null);
-            }
-          });
-        }, 600000);
-      }
-    };
-  </script>
-
-  <script>
-    // Játéklogika
-    let character = {};
-    let turns = 0;
-    let shapeshiftActive = false;
-
-    const classHP = {
-      Harcos: 600, Mágus: 500, Tolvaj: 400, Druida: 450,
-      Pigmen: 525, Tünde: 425, Pap: 375, SötétElf: 450,
-      Koldus: 350, Tank: 900, Alakváltó: 400
-    };
-
-    const classTypes = {
-      Fizikai: ["Harcos", "Tolvaj", "Koldus"],
-      Spirit: ["Druida", "Mágus", "SötétElf"],
-      Support: ["Tünde", "Tank", "Pigmen", "Pap"],
-      Speciális: ["Alakváltó"]
-    };
-
-    // Globális függvények
-    window.updateClassInfo = function() {
-      const selectedClass = document.getElementById("class").value;
-      let infoText = "";
-      if (classTypes.Fizikai.includes(selectedClass)) {
-        infoText = "Rezisztencia: Fizikai sebzés -20% | Érzékenység: Spirit sebzés +25%";
-      } else if (classTypes.Spirit.includes(selectedClass)) {
-        infoText = "Rezisztencia: Spirit sebzés -20% | Érzékenység: Fizikai sebzés +25%";
-      } else if (classTypes.Support.includes(selectedClass)) {
-        infoText = "Nincs rezisztencia vagy érzékenység";
-      } else if (selectedClass === "Alakváltó") {
-        infoText = "Alakváltó: 5 körönként választhat más kasztot 1 körre";
-        document.getElementById("shapeshiftSection").style.display = "block";
-      } else {
-        document.getElementById("shapeshiftSection").style.display = "none";
-      }
-      document.getElementById("classInfo").textContent = infoText;
-    };
-
-    window.modifyStat = function(stat, change) {
-      const input = document.getElementById(stat);
-      const remainingElement = document.getElementById('remainingPoints');
-      let currentValue = parseInt(input.value);
-      let remaining = parseInt(remainingElement.textContent.split(': ')[1]);
-
-      if(change === 1) {
-        if(remaining > 0 && currentValue < 20) {
-          input.value = currentValue + 1;
-          remainingElement.textContent = `Maradék pontok: ${remaining - 1}`;
-        }
-      } else {
-        if(currentValue > 1) {
-          input.value = currentValue - 1;
-          remainingElement.textContent = `Maradék pontok: ${remaining + 1}`;
-        }
-      }
-    };
-
-    window.createCharacter = function() {
-      const totalPoints = 20 - parseInt(document.getElementById('remainingPoints').textContent.split(': ')[1]);
-      if(totalPoints !== 20) {
-        alert("Pontosan 20 pontot kell szétosztani!");
-        return;
-      }
-
-      const className = document.getElementById("class").value;
-      character = {
-        name: document.getElementById("name").value,
-        class: className,
-        originalClass: className,
-        currentForm: null,
-        maxHP: classHP[className],
-        currentHP: classHP[className],
-        atk: parseInt(document.getElementById("atk").value),
-        esc: parseInt(document.getElementById("esc").value),
-        def: parseInt(document.getElementById("def").value),
-        turnsSinceShapeshift: 0
-      };
-
-      // Firebase-be mentés
-      if(roomId) {
-        const playersRef = ref(database, `rooms/${roomId}/players`);
-        const newPlayerRef = push(playersRef);
-        playerId = newPlayerRef.key;
-        playerRef = newPlayerRef;
-        set(newPlayerRef, character);
-        onDisconnect(newPlayerRef).remove();
-      }
-
-      updateCharacterDisplay();
-      updateClassInfo();
-    };
-
-    function updateCharacterDisplay() {
-      const displayedClass = character.currentForm 
-        ? `${character.class} (${character.currentForm})`
-        : character.class;
-
-      document.getElementById("characterInfo").innerHTML = `
-        Név: ${character.name}<br>
-        Kaszt: ${displayedClass}<br>
-        HP: ${character.currentHP}/${character.maxHP}<br>
-        ATK: ${character.atk}<br>
-        ESC: ${character.esc}<br>
-        DEF: ${character.def}<br>
-      `;
-
-      if(playerRef) {
-        update(playerRef, character);
-      }
+  // Szoba kezelési függvények
+  const createRoom = async () => {
+    try {
+      roomId = 'room_' + Math.random().toString(36).substr(2, 9);
+      const roomRef = ref(database, `rooms/${roomId}`);
+      
+      await set(roomRef, {
+        createdAt: Date.now(),
+        players: {},
+        lastActivity: Date.now()
+      });
+      
+      onDisconnect(roomRef).remove();
+      document.getElementById("roomStatus").textContent = `Szoba létrehozva: ${roomId}`;
+      listenToRoom();
+    } catch (error) {
+      alert("Hiba: " + error.message);
     }
+  };
 
-    // További függvények...
-    window.takeDamage = function() {
-      if(!character.name) return;
-      const dmg = parseInt(document.getElementById("dmgInput").value) || 0;
-      character.currentHP = Math.max(character.currentHP - dmg, 0);
-      document.getElementById("hpStatus").innerHTML = `Sebzés: ${dmg} | Maradék HP: ${character.currentHP}`;
-      updateCharacterDisplay();
-      window.firebaseTools.updatePlayerState(character);
-    };
+  const joinRoom = async () => {
+    const inputRoom = prompt("Add meg a szoba kódját:");
+    if (!inputRoom) return;
+    
+    try {
+      const roomRef = ref(database, `rooms/${inputRoom}`);
+      const snapshot = await get(roomRef);
+      
+      if (snapshot.exists()) {
+        roomId = inputRoom;
+        await update(roomRef, { lastActivity: Date.now() });
+        document.getElementById("roomStatus").textContent = `Csatlakozva: ${roomId}`;
+        listenToRoom();
+      } else {
+        alert("A szoba nem létezik!");
+      }
+    } catch (error) {
+      alert("Hiba: " + error.message);
+    }
+  };
 
-    window.healCharacter = function() {
-      if(!character.name) return;
-      const heal = parseInt(document.getElementById("healInput").value) || 0;
-      character.currentHP = Math.min(character.currentHP + heal, character.maxHP);
-      document.getElementById("healStatus").innerHTML = `Gyógyítás: ${heal} | Jelenlegi HP: ${character.currentHP}`;
-      updateCharacterDisplay();
-      window.firebaseTools.updatePlayerState(character);
-    };
-
-    // További eseménykezelők...
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('shapeshiftSection').style.display = 'none';
-      window.updateClassInfo();
+  const listenToRoom = () => {
+    if (!roomId) return;
+    const playersRef = ref(database, `rooms/${roomId}/players`);
+    
+    onValue(playersRef, (snapshot) => {
+      const players = snapshot.val() || {};
+      const roomPlayersDiv = document.getElementById("roomPlayers");
+      roomPlayersDiv.innerHTML = Object.entries(players)
+        .map(([id, player]) => `
+          <div class="player-info">
+            <strong>${player.name}</strong> (${player.class})
+            <div>HP: ${player.currentHP}/${player.maxHP}</div>
+            <div>ATK: ${player.atk} DEF: ${player.def} ESC: ${player.esc}</div>
+          </div>
+        `).join('');
     });
-  </script>
-</body>
+  };
+
+  // Függvények globális elérhetővé tétele
+  window.createRoom = createRoom;
+  window.joinRoom = joinRoom;
+			</script>
+		</script>
+	</body>
 </html>
